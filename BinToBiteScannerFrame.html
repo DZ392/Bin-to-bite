@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Ingredients Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+    </head>
+
+    <body>
+
+        <div id="titleFrame">
+            <img src="images/btb logo.png" height="60" width="60">
+            <h2 id="title">Bin To Bite</h2>
+            <button id="go-back">Go Back</button>
+        </div>
+
+        <div id="title_page_div">
+                <h2 id="title_page"> Scan Your Food! </h2>
+        </div>
+
+        <video id="video" width="600" height="440" autoplay muted></video>
+        <canvas id="canvas" width="600" height="440"></canvas>
+        <center>
+            <h3 id="items">Ingredients: </h3>
+            <section id="formatList">
+                <h3 id="trackedList"></h2>
+            </section>
+
+            <button id="check" height="300" width="600" onclick="add()"> Add </button>
+            <button id="clear" height="300" width="600" onclick="clearList()">Clear</button>
+            <button id="delete" height="300" width="600" onclick="deleteLast()">Delete</button>
+
+            <br><br>
+
+            <button id="Generate" height="500" width="800" onclick="appendToFile(trackedList)">Generate</button>
+            
+        </center>
+
+        <style>
+
+            #title{
+                font-family: 'Calibri', sans-serif;
+                color: #506046;
+                background-color: #f3e2c1;
+                position: center;
+            
+            }
+
+            body {
+                text-align: center;
+                font-family: 'Calibri', sans-serif;
+                background-color: #f3e2c1;
+            }
+            video, canvas {
+                border: 2px solid #ff7900;
+                margin-top: 10px;
+            }
+            #check, #delete, #clear{
+
+                background-color: #ff7900;
+                width: 300;
+                height:100;
+
+            }
+            
+            #check.hover, #delete.hover, #clear.hover{
+
+                background-color: #a4bd38;
+                width: 300;
+                height:100;
+
+            }
+
+            #titleFrame{
+    
+                background-color: #f3e2c1;
+                width: 1080;
+                height: 93px;
+                position: relative;
+                display: flex;
+                align-items: center;
+                padding-left: 23px;
+                gap: 20px;
+                font-family: 'Calibri', sans-serif;
+                border: #f3e2c1, 20px;
+            }
+
+            #items{
+                color: #506046;
+                font-family: 'Calibri', sans-serif;
+                text-decoration: underline;
+            }
+
+            #formatList{
+                color:  #506046;
+            }
+
+            #Generate{
+                font-family:'Calibri', sans-serif;
+                font: 30;
+                background-color: #506046;
+                color: black;
+            }
+
+            #title_page_div{
+
+                background-color: #a4bd38;
+                width: 1080;
+                height: 100px;
+                color: #ff7900;
+                position: relative;
+
+            }
+
+            #title_page {
+                color: #ff7900;
+                font: 40;
+                background-color: #a4bd38;
+                text-align: center; /* Centers text horizontally */
+                display: flex;
+                justify-content: center; /* Centers text horizontally inside flexbox */
+                align-items: center; /* Centers text vertically */
+                height: 100px; /* Ensures full vertical centering */
+            }
+
+            #go-back{
+                position: absolute;
+                left: 90%;
+                color: #506046;
+            }
+
+
+        </style>
+
+        <script type="text/JavaScript">
+
+            const { app } = require('electron');
+
+            document.getElementById("go-back").addEventListener("click", function() {
+                app.quit(); // Completely exits the application
+            });
+
+
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const trackedList = document.getElementById('trackedList');
+
+            let model;
+            let trackedItems = [];
+            let currentDetections = [];
+
+            async function startVideo() {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            }
+
+            async function detectFrame() {
+                const predictions = await model.detect(video);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(video, 0, 0);
+
+                currentDetections = []; 
+
+                predictions.forEach(pred => {
+                    ctx.beginPath();
+                    ctx.rect(...pred.bbox);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'green';
+                    ctx.fillStyle = 'green';
+                    ctx.stroke();
+                    ctx.fillText(
+                    `${pred.class} - ${Math.round(pred.score * 100)}%`,
+                    pred.bbox[0],
+                    pred.bbox[1] > 10 ? pred.bbox[1] - 5 : 10
+                    );
+
+                currentDetections.push(pred.class);
+
+                });
+
+                requestAnimationFrame(detectFrame);
+
+            }
+
+            function add() {
+                const newItems = currentDetections.filter(item => !trackedItems.includes(item));
+                trackedItems = [...trackedItems, ...newItems];
+                displayTrackedItems();
+            }
+
+            function deleteLast() {
+                if (trackedItems.length > 0) {
+                    trackedItems.pop();
+                    displayTrackedItems();
+                }
+            }
+
+            function clearList() {
+                trackedItems = [];
+                displayTrackedItems();
+            }
+
+            function displayTrackedItems() {
+            trackedList.innerHTML = trackedItems.length > 0 ? trackedItems.join(", ") : "No items added";
+            }
+
+            async function init() {
+            await startVideo();
+            model = await cocoSsd.load();
+            detectFrame();
+            }
+
+    const fs = require('fs');
+
+    function appendToFile(data) {
+        fs.appendFile('ingredients.txt', ',' + data, function (err) {
+            if (err) throw err;
+            console.log('Saved!');
+    });
+}
+            init();
+    </script>
+
+    </body>
+
+</html>
