@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bin to Bite — No Crumb Left Behind</title>
+    <meta name="description" content="Reduce food waste by scanning your leftover ingredients and discovering delicious recipe ideas. Snap a photo, get recipes!">
+    <link rel="icon" href="images/btb logo.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3"></script>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+    <a href="#" class="nav-brand">
+        <img src="images/btb logo.png" alt="Bin to Bite logo">
+        <h1>Bin to Bite</h1>
+    </a>
+    <ul class="nav-links" id="nav-links">
+        <li><a href="#hero" class="active" data-nav>Home</a></li>
+        <li><a href="#how-it-works" data-nav>How It Works</a></li>
+        <li><a href="#scanner" data-nav>Scanner</a></li>
+        <li><a href="#recipes" data-nav>Recipes</a></li>
+        <li><a href="#about" data-nav>About</a></li>
+        <li><a href="#scanner" class="nav-cta" data-nav>Get Started</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h2>Join our cause and ensure that <span>no crumb is left behind!</span></h2>
+            <p>Snap a picture of your ingredients and let our smart scanner detect what's in your kitchen. We'll find delicious recipes you can make right now!</p>
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="scrollTo('#scanner')">Scan Ingredients</button>
+                <button class="btn-secondary" onclick="scrollTo('#how-it-works')">Learn How</button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="images/hero-ingredients.png" alt="Fresh colorful ingredients on a rustic table">
+            <div class="hero-badge">
+                <span class="stat-icon">🌍</span>
+                <span>2.5B tons of food wasted/year — let's change that</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section id="how-it-works">
+    <div class="section-header">
+        <span class="label">Information</span>
+        <h2>Website Information</h2>
+        <p>Welcome to Bin to Bite: your guide to smarter food use and less waste.</p>
+    </div>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-icon">📸</div>
+            <div class="step-number">1</div>
+            <h3>Scan Ingredients</h3>
+            <p>Snap a picture of your ingredients and let our smart scanner detect what's in your kitchen!</p>
+        </div>
+        <div class="step-card">
+            <div class="step-icon">✏️</div>
+            <div class="step-number">2</div>
+            <h3>Add Manually</h3>
+            <p>Prefer to type? Use the Ingredient List to add items manually and keep track of what you have.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-icon">🍽️</div>
+            <div class="step-number">3</div>
+            <h3>Get Recipes</h3>
+            <p>With your ingredients saved, explore personalized recipes that help reduce food waste and inspire your next meal.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SCANNER ===== -->
+<section id="scanner">
+    <div class="section-header">
+        <span class="label">Food Scanner</span>
+        <h2>Scan Your Food!</h2>
+        <p>Easily add to your ingredients list by snapping a photo of your food. Our scanner uses image recognition!</p>
+    </div>
+    <div class="scanner-layout">
+        <!-- Left: Upload/Camera -->
+        <div class="scanner-panel" style="position:relative;">
+            <div class="scanning-overlay" id="scanning-overlay">
+                <div class="spinner"></div>
+                <p id="scanning-text">Analyzing ingredients…</p>
+            </div>
+            <h3>📷 Upload or Scan</h3>
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">🖼️</div>
+                <p><strong>Drag & drop</strong> an image here, or <span class="browse-link">browse</span></p>
+                <p style="font-size:0.8rem; margin-top:6px; opacity:0.5;">Supports JPG, PNG, WebP</p>
+                <input type="file" id="file-input" accept="image/*">
+            </div>
+            <div class="image-preview" id="image-preview">
+                <img id="preview-img" alt="Uploaded ingredient photo">
+                <button class="remove-btn" id="remove-preview" title="Remove image">✕</button>
+            </div>
+            <div class="camera-container" id="camera-container">
+                <video id="video" autoplay muted playsinline></video>
+                <canvas id="canvas"></canvas>
+                <div class="camera-controls">
+                    <button class="btn-icon btn-capture" id="btn-capture" title="Add detected items">➕</button>
+                    <button class="btn-icon btn-stop" id="btn-stop-camera" title="Stop camera">⏹</button>
+                </div>
+            </div>
+            <div class="scanner-actions">
+                <button class="btn-scan" id="btn-scan-image" disabled>🔍 Scan Image</button>
+                <button class="btn-camera" id="btn-open-camera">📹 Use Camera</button>
+            </div>
+        </div>
+
+        <!-- Right: Ingredient List -->
+        <div class="scanner-panel">
+            <h3>🥕 Ingredients List</h3>
+            <div class="detected-list" id="detected-list">
+                <p style="opacity:0.5; font-size:0.9rem;" id="empty-msg">No ingredients yet — scan or type below</p>
+            </div>
+            <div class="manual-add">
+                <input type="text" id="manual-input" placeholder="Type an ingredient…" autocomplete="off">
+                <button id="btn-add-manual">Add</button>
+            </div>
+            <div class="generate-bar">
+                <button class="btn-generate" id="btn-generate" disabled>
+                    🍳 Generate Recipes
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== RECIPES ===== -->
+<section id="recipes">
+    <div class="section-header">
+        <span class="label">Recipe Ideas</span>
+        <h2>Recipe Ideas</h2>
+        <p>Explore delicious recipes you can make with your scanned ingredients!</p>
+    </div>
+    <div id="recipes-container">
+        <div class="recipes-empty" id="recipes-empty">
+            <div class="empty-icon">🧑‍🍳</div>
+            <h3>No recipes yet</h3>
+            <p>Scan your ingredients above and hit "Generate Recipes" to see delicious ideas here.</p>
+        </div>
+        <div class="recipes-grid" id="recipes-grid" style="display:none;"></div>
+    </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+    <div class="about-layout">
+        <div class="about-image">
+            <img src="images/recipes-showcase.png" alt="Beautiful plated dishes">
+        </div>
+        <div class="about-text">
+            <h2>About <span>Bin to Bite</span></h2>
+            <p>Every year, <strong>2.5 billion tons</strong> of food go to waste globally. That's why we created Bin to Bite — our mission is simple: reduce food waste by helping you make the most of the ingredients already in your kitchen.</p>
+            <p>Upload a photo, let our AI identify your ingredients, and discover delicious recipes you can make right now. No more throwing away food that could become your next great meal.</p>
+            <div class="impact-stats">
+                <div class="stat-item">
+                    <div class="stat-number">2.5B</div>
+                    <div class="stat-label">Tons wasted/year</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">40%</div>
+                    <div class="stat-label">Of food is wasted</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">$1.2T</div>
+                    <div class="stat-label">Lost annually</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <img src="images/btb logo.png" alt="Logo">
+            <span>Bin to Bite</span>
+        </div>
+        <div class="footer-credits">Created by Lakshna, Samreen, Jennifer, &amp; Daisy</div>
+        <div class="footer-links">
+            <a href="#how-it-works">How It Works</a>
+            <a href="#scanner">Scanner</a>
+            <a href="#about">About</a>
+        </div>
+    </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
