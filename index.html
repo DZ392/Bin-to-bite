@@ -23,7 +23,6 @@
     </a>
     <ul class="nav-links" id="nav-links">
         <li><a href="#hero" class="active" data-nav>Home</a></li>
-        <li><a href="#how-it-works" data-nav>How It Works</a></li>
         <li><a href="#scanner" data-nav>Scanner</a></li>
         <li><a href="#recipes" data-nav>Recipes</a></li>
         <li><a href="#about" data-nav>About</a></li>
@@ -42,7 +41,7 @@
             <p>Snap a picture of your ingredients and let our smart scanner detect what's in your kitchen. We'll find delicious recipes you can make right now!</p>
             <div class="hero-actions">
                 <button class="btn-primary" onclick="scrollTo('#scanner')">Scan Ingredients</button>
-                <button class="btn-secondary" onclick="scrollTo('#how-it-works')">Learn How</button>
+                <button class="btn-secondary" onclick="scrollTo('#scanner')">Learn How</button>
             </div>
         </div>
         <div class="hero-image">
@@ -55,41 +54,35 @@
     </div>
 </section>
 
-<!-- ===== HOW IT WORKS ===== -->
-<section id="how-it-works">
-    <div class="section-header">
-        <span class="label">Information</span>
-        <h2>Website Information</h2>
-        <p>Welcome to Bin to Bite: your guide to smarter food use and less waste.</p>
-    </div>
-    <div class="steps-grid">
-        <div class="step-card">
-            <div class="step-icon">📸</div>
-            <div class="step-number">1</div>
-            <h3>Scan Ingredients</h3>
-            <p>Snap a picture of your ingredients and let our smart scanner detect what's in your kitchen!</p>
-        </div>
-        <div class="step-card">
-            <div class="step-icon">✏️</div>
-            <div class="step-number">2</div>
-            <h3>Add Manually</h3>
-            <p>Prefer to type? Use the Ingredient List to add items manually and keep track of what you have.</p>
-        </div>
-        <div class="step-card">
-            <div class="step-icon">🍽️</div>
-            <div class="step-number">3</div>
-            <h3>Get Recipes</h3>
-            <p>With your ingredients saved, explore personalized recipes that help reduce food waste and inspire your next meal.</p>
-        </div>
-    </div>
-</section>
-
 <!-- ===== SCANNER ===== -->
 <section id="scanner">
     <div class="section-header">
         <span class="label">Food Scanner</span>
         <h2>Scan Your Food!</h2>
         <p>Easily add to your ingredients list by snapping a photo of your food. Our scanner uses image recognition!</p>
+    </div>
+    <div class="steps-row">
+        <div class="step-mini">
+            <div class="step-mini-number">1</div>
+            <div class="step-mini-content">
+                <h4>📸 Scan Ingredients</h4>
+                <p>Upload a photo or use your camera to detect food items automatically.</p>
+            </div>
+        </div>
+        <div class="step-mini">
+            <div class="step-mini-number">2</div>
+            <div class="step-mini-content">
+                <h4>✏️ Add Manually</h4>
+                <p>Type any extra ingredients the scanner may have missed.</p>
+            </div>
+        </div>
+        <div class="step-mini">
+            <div class="step-mini-number">3</div>
+            <div class="step-mini-content">
+                <h4>🍽️ Get Recipes</h4>
+                <p>Hit "Generate Recipes" and discover meals you can cook right now!</p>
+            </div>
+        </div>
     </div>
     <div class="scanner-layout">
         <!-- Left: Upload/Camera -->
@@ -159,6 +152,7 @@
     </div>
 </section>
 
+
 <!-- ===== ABOUT ===== -->
 <section id="about">
     <div class="about-layout">
@@ -196,8 +190,8 @@
         </div>
         <div class="footer-credits">Created by Lakshna, Samreen, Jennifer, &amp; Daisy</div>
         <div class="footer-links">
-            <a href="#how-it-works">How It Works</a>
             <a href="#scanner">Scanner</a>
+            <a href="#recipes">Recipes</a>
             <a href="#about">About</a>
         </div>
     </div>
